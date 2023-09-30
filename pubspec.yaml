@@ -1,0 +1,12 @@
+name: entity_simple_cache
+description: A simple in memory cache for small/medium size systems
+version: 1.0.0
+homepage: https://github.com/TheTosters/entity_simple_cache
+repository: https://github.com/TheTosters/entity_simple_cache
+
+environment:
+  sdk: ^3.1.2
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
