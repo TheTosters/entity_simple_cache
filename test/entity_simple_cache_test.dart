@@ -85,6 +85,21 @@ void main() {
         expect(cache.read(t), null);
       }
     });
+    test('Custom expiration check', () async {
+      Cache<int, int> cache = Cache(
+        entriesExpiration: Duration(milliseconds: 100),
+        cleanupDuration: Duration(milliseconds: 150),
+      );
+      cache[1] = 1;
+      cache.write(2, 2, expiry: Duration(milliseconds: 300));
+      expect(cache.read(1), 1);
+      expect(cache.read(2), 2);
+      await Future.delayed(Duration(milliseconds: 200));
+      expect(cache.read(1), null);
+      expect(cache.read(2), 2);
+      await Future.delayed(Duration(milliseconds: 200));
+      expect(cache.read(2), null);
+    });
   });
   group('Data consistency', () {
     test('Values should updated', () async {

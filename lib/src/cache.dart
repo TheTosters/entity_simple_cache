@@ -81,11 +81,14 @@ class Cache<K, V> {
     return result;
   }
 
+  bool contains(K key) => read(key) != null;
+
   ///Creates or updates entry in cache. Note that this can be time consuming operation if
   ///[maxLength] is set to improper value. If you are using it, tune it to your system needs
-  void write(K key, V value) {
+  ///[expiry] allows to use different expiration time then defined in constructor
+  void write(K key, V value, {Duration? expiry}) {
     final entry = _map[key];
-    final validUntil = DateTime.now().add(entriesExpiration);
+    final validUntil = DateTime.now().add(expiry ?? entriesExpiration);
     if (entry != null) {
       entry.validUntil = validUntil;
       entry.value = value;
