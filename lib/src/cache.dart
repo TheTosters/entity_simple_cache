@@ -3,36 +3,18 @@ import 'dart:collection';
 
 import 'package:entity_simple_cache/src/cache_entry.dart';
 
-class Cache<K, V> extends TypedCache<K, V> {
-  Cache({
-    super.entriesExpiration = const Duration(minutes: 10),
-    super.revalidateHitCount = -1,
-    Duration? cleanupDuration,
-    super.maxLength = -1,
-  }) : super(HashMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
-}
-
-class SplayTreeCache<K, V> extends TypedCache<K, V> {
-  SplayTreeCache({
-    super.entriesExpiration = const Duration(minutes: 10),
-    super.revalidateHitCount = -1,
-    Duration? cleanupDuration,
-    super.maxLength = -1,
-  }) : super(SplayTreeMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
-}
-
-///Simple cache for typed key and value. Class allows to configure few simple strategies to dispose
-///expired entries:
-///* Check whole cache for entries expiration after performing selected number of reads (set
-///[revalidateHitCount] argument)
-///* Check whole cache for entries expiration on demand (call method [removeExpired])
-///* Use timer which will execute cache expiration check in periodic cycles
-///(set [cleanupDuration] argument)
-///Additionally you can constrain cache size by setting [maxLength], this will prevent cache for
-///holding more then given entries. If cache is full and new item need to be added then:
-///1. Check for expiration is done to get free space
-///1. If no free space is obtained, naive search for oldest entries is executed. One entry will be
-///removed and filled with new data
+/// Simple cache for typed key and value. Class allows to configure few simple strategies to dispose
+/// expired entries:
+/// * Check whole cache for entries expiration after performing selected number of reads (set
+/// [revalidateHitCount] argument)
+/// * Check whole cache for entries expiration on demand (call method [removeExpired])
+/// * Use timer which will execute cache expiration check in periodic cycles
+/// (set [cleanupDuration] argument)
+/// Additionally you can constrain cache size by setting [maxLength], this will prevent cache for
+/// holding more then given entries. If cache is full and new item need to be added then:
+/// 1. Check for expiration is done to get free space
+/// 1. If no free space is obtained, naive search for oldest entries is executed. One entry will be
+/// removed and filled with new data
 ///
 /// There are two methods to get cache size [length] returns approximate entries count (it might be
 /// larger then actual available entries depending on expiration conditions). Call to [exactLength]
@@ -59,7 +41,8 @@ class TypedCache<K, V> {
   ///* [cleanupDuration] if set internal timer is created. Timer will call [removeExpired]
   ///periodically in cleanupDuration intervals.
   ///* [maxLength] constrains number of entries in cache
-  TypedCache(this._map, {
+  TypedCache(
+    this._map, {
     this.entriesExpiration = const Duration(minutes: 10),
     this.revalidateHitCount = -1,
     Duration? cleanupDuration,
@@ -196,4 +179,26 @@ class TypedCache<K, V> {
     sb.write("}");
     return sb.toString();
   }
+}
+
+/// Cache which uses [HashMap] as a storage collection.
+/// For cache work details please refer to [TypedCache] documentation.
+class Cache<K, V> extends TypedCache<K, V> {
+  Cache({
+    super.entriesExpiration = const Duration(minutes: 10),
+    super.revalidateHitCount = -1,
+    Duration? cleanupDuration,
+    super.maxLength = -1,
+  }) : super(HashMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
+}
+
+/// Cache which uses [SplayTreeCache] as a storage collection.
+/// For cache work details please refer to [TypedCache] documentation.
+class SplayTreeCache<K, V> extends TypedCache<K, V> {
+  SplayTreeCache({
+    super.entriesExpiration = const Duration(minutes: 10),
+    super.revalidateHitCount = -1,
+    Duration? cleanupDuration,
+    super.maxLength = -1,
+  }) : super(SplayTreeMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
 }
