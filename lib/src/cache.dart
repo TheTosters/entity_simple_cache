@@ -3,6 +3,24 @@ import 'dart:collection';
 
 import 'package:entity_simple_cache/src/cache_entry.dart';
 
+class Cache<K, V> extends TypedCache<K, V> {
+  Cache({
+    super.entriesExpiration = const Duration(minutes: 10),
+    super.revalidateHitCount = -1,
+    Duration? cleanupDuration,
+    super.maxLength = -1,
+  }) : super(HashMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
+}
+
+class SplayTreeCache<K, V> extends TypedCache<K, V> {
+  SplayTreeCache({
+    super.entriesExpiration = const Duration(minutes: 10),
+    super.revalidateHitCount = -1,
+    Duration? cleanupDuration,
+    super.maxLength = -1,
+  }) : super(SplayTreeMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
+}
+
 ///Simple cache for typed key and value. Class allows to configure few simple strategies to dispose
 ///expired entries:
 ///* Check whole cache for entries expiration after performing selected number of reads (set
@@ -21,8 +39,8 @@ import 'package:entity_simple_cache/src/cache_entry.dart';
 /// will return real entries count, however [removeExpired] is called internally to dispose expired
 /// entries before counting it. If you need to check cache size prefer usage of [length] since it
 /// is O[[1]] execution time.
-class Cache<K, V> {
-  final SplayTreeMap<K, CacheEntry<V>> _map = SplayTreeMap<K, CacheEntry<V>>();
+class TypedCache<K, V> {
+  final Map<K, CacheEntry<V>> _map;
   final Duration entriesExpiration;
   final int revalidateHitCount;
   final int maxLength;
@@ -41,7 +59,7 @@ class Cache<K, V> {
   ///* [cleanupDuration] if set internal timer is created. Timer will call [removeExpired]
   ///periodically in cleanupDuration intervals.
   ///* [maxLength] constrains number of entries in cache
-  Cache({
+  TypedCache(this._map, {
     this.entriesExpiration = const Duration(minutes: 10),
     this.revalidateHitCount = -1,
     Duration? cleanupDuration,

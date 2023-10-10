@@ -41,3 +41,31 @@ void main() {
   print("cache for key D is: ${cache["D"]}");       //read from cache
 }
 ```
+
+## Selecting different cache collection
+
+By default proposed cache is using ```HashMap``` as a collection to store data, however it allows
+to choose also ```SplayTreeMap```. Here is show code snippet showing how to use it:
+```dart
+import 'package:entity_simple_cache/src/cache.dart';
+
+void main() {
+  final cache = Cache<String, String>(maxLength: 3);            //uses HashMap internally
+  final cache2 = SplayTreeCache<String, String>(maxLength: 3);  //uses SplayTreeMap internally
+}
+```
+
+If for some reasons different type of collection is needed please refer to source how to do it. 
+Chosen collection must conform to Dart ```Map``` interface, here is example how to build 
+```CustomCache``` class which uses ```LinkedHashMap``` under the hood:
+
+```dart
+class CustomCache<K, V> extends TypedCache<K, V> {
+  CustomCache({
+    super.entriesExpiration = const Duration(minutes: 10),
+    super.revalidateHitCount = -1,
+    Duration? cleanupDuration,
+    super.maxLength = -1,
+  }) : super(LinkedHashMap<K, CacheEntry<V>>(), cleanupDuration: cleanupDuration);
+}
+```
